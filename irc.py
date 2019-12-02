@@ -25,7 +25,7 @@ def karmas(name, point):
     
 server = 'chat.freenode.net'
 port = 6667
-channel = '##KVY'
+channel = '#pythonpune'
 bot_nick = 'gitircbot_test'
 
 connect_to(server, port)
