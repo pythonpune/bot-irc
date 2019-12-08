@@ -1,10 +1,11 @@
 import socket
 from time import sleep
+from configparser import ConfigParser
 
 
 irc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-def connect_to(server,port):
+def connect_to(server, port):
     irc.connect((server, port))
     print(f"Connected to server {server}")
 
@@ -22,11 +23,14 @@ def karmas(name, point):
     elif point == "-":
         karma[name] -= 1
     irc.send(bytes("PRIVMSG " + channel + " :" + name + " Has " + str(karma[name]) + " Points. \n", 'utf-8'))
-    
-server = 'chat.freenode.net'
-port = 6667
-channel = '#pythonpune'
-bot_nick = 'gitircbot_test'
+
+
+content = ConfigParser()
+content.read('config.ini')    
+server = content.get('details', 'server')
+port = content.getint('details', 'port')
+channel = content.get('details', 'channel')
+bot_nick = content.get('details', 'bot_nick')
 
 connect_to(server, port)
 join_channel(channel, bot_nick)
@@ -51,7 +55,7 @@ while True:
         if msg.split()[-1] in karma.keys():
             irc.send(bytes("PRIVMSG " + channel + " :" + msg.split()[-1] + ", has " + str(karma[msg.split()[-1]]) + " points. \n", 'utf-8'))
         else:
-            irc.send(bytes("PRIVMSG " + channel + " :No such nick \n", 'utf-8'))
+            irc.send(bytes("PRIVMSG " + channel + " :Nick has no points. \n", 'utf-8'))
 
     if msg.endswith('++') and msg.startswith(':'):
         karmas(msg[1:-2], '+')
